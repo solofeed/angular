@@ -5,13 +5,16 @@ var store = angular.module('store', [
     'ngRoute'
 ]);
 
-store.config(function ($routeProvider) {
-    /*
-     * Routing settings
-     * */
-    $routeProvider
-        .when('/', {
-        templateUrl: 'templates/list.html',
-        controller: function () {}
-        });
-});
+store.config(
+        /* @ngInject */
+        function ($routeProvider) {
+        /*
+         * Routing settings
+         * */
+        $routeProvider
+            .when('/', {
+            templateUrl: 'templates/list.html',
+            controller: function () {}
+            });
+    }
+);
