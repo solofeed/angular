@@ -2,7 +2,8 @@
 
 /* App Module */
 var store = angular.module('store', [
-    'ngRoute'
+    'ngRoute',
+    'ui.router'
 ]);
 
 store.config(
