@@ -8,14 +8,18 @@ var store = angular.module('store', [
 
 store.config(
         /* @ngInject */
-        function ($routeProvider) {
+        function ($stateProvider, $urlRouterProvider, $locationProvider) {
         /*
          * Routing settings
          * */
-        $routeProvider
-            .when('/', {
-            templateUrl: 'templates/list.html',
-            controller: function () {}
+        $stateProvider
+            .state('list', {
+                url: '/list',
+                templateUrl: 'templates/list.html',
+                controller: function ($stateParams) {}
             });
+
+            $urlRouterProvider.when('/', '/');
+
     }
 );
