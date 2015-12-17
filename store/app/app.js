@@ -1,5 +1,3 @@
-'use strict';
-
 /* App Module */
 var store = angular.module('store', [
     'ngRoute',
@@ -15,7 +13,7 @@ store.config(
         $stateProvider
             .state('list', {
                 url: '/list',
-                templateUrl: 'templates/list.html',
+                templateUrl: 'assets/all.html',
                 controller: function ($stateParams) {}
             });
 

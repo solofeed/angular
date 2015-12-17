@@ -1,0 +1,28 @@
+<div class="row" ng-controller="HomeController">
+    <h1>{{title}}</h1>
+
+    <div class="col-md-2">
+        <p>Search: <input ng-model="query"></p>
+
+        Sort by:
+        <select ng-model="orderProp">
+            <option value="name">Alphabetical</option>
+            <option value="age">Newest</option>
+        </select>
+    </div>
+
+    <div class="col-md-10">
+
+        <ul class="phones">
+            <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
+                <div class="app">
+                    <span>{{phone.name}}</span>
+                    <p>{{phone.snippet}}</p>
+                    <img ng-src="{{phone.imageUrl}}" alt="">
+                </div>
+            </li>
+        </ul>
+        <p>Total number of gadjets: {{phones.length}}</p>
+
+    </div>
+</div>
