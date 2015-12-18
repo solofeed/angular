@@ -13,7 +13,7 @@ store.config(
         $stateProvider
             .state('list', {
                 url: '/list',
-                templateUrl: 'assets/all.html',
+                templateUrl: 'assets/templates/all.html',
                 controller: function ($stateParams) {}
             });
 

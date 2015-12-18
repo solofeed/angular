@@ -15,7 +15,7 @@ store.config(
         $stateProvider
             .state('list', {
                 url: '/list',
-                templateUrl: 'assets/all.html',
+                templateUrl: 'assets/templates/all.html',
                 controller: ["$stateParams", function ($stateParams) {}]
             });
 
@@ -37,4 +37,7 @@ function HomeController ($scope, $http) {
 }
 HomeController.$inject = ["$scope", "$http"];
 store.controller('HomeController', HomeController);
+function returnName (name) {
+    console.log('Hello' + name + '!');
+}
 })();

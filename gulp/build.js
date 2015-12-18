@@ -17,8 +17,24 @@ var gulp          = require('gulp'),
     minifyCSS     = require('gulp-minify-css'),
     bower         = require('gulp-main-bower-files'),
     flatten       = require('gulp-flatten'),
+    clean         = require('gulp-clean'),
+    changed       = require('gulp-changed'),
     dedupe        = require('gulp-dedupe');
 
+
+
+//http://zencoder.ru/gulp/gulp-plumber/
+//http://browsenpm.org/package/gulp-changed
+//http://getinstance.info/articles/tools/9-gulp-plugins/
+//http://habrahabr.ru/post/252745/
+//http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript
+//http://habrahabr.ru/post/190342/
+//http://habrahabr.ru/post/222065/
+gulp.task('test', function () {
+    return gulp.src(TEMPLATES_PATH + 'sass/*.sass')
+        .pipe(plumber())
+        .pipe(gulp.dest(ASSETS_PATH + 'test'));
+});
 
 /**
  * build task
@@ -37,7 +53,6 @@ gulp.task('develop', ['js', 'templates', 'bower', 'sass', 'watch']);
  */
 gulp.task('sass', function () {
     return gulp.src(TEMPLATES_PATH + 'sass/**/*.{sass,scss,css}')
-        .pipe(plumber())
         .pipe(compass({
             css: ASSETS_PATH + 'css',
             sass: TEMPLATES_PATH + 'sass'
@@ -47,7 +62,7 @@ gulp.task('sass', function () {
             console.log(error);
             this.emit('end');
         })
-        .pipe(autoprefixer())
+        //.pipe(autoprefixer())
         .pipe(minifyCSS())
         .pipe(rename({suffix: '.min'}))
         .pipe((gulp.dest(ASSETS_PATH + 'css')));
