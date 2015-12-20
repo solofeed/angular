@@ -1,14 +1,26 @@
 const SRC_PATH = './store/';
 const ASSETS_PATH = './assets/';
-const TEMPLATES_PATH = './templates/';
+
+var path = {
+    build: {
+        html: ASSETS_PATH + 'templates',
+        css: ASSETS_PATH + 'css',
+        js: ASSETS_PATH + 'js'
+    },
+    src: {
+        html: SRC_PATH + 'views/**/*.html',
+        sass: 'templates/sass/**/*.sass',
+        js: SRC_PATH + 'app/**/*.js'
+    },
+    clean: ASSETS_PATH
+}
+
 
 var gulp          = require('gulp'),
     rename        = require('gulp-rename'),
     compass       = require('gulp-compass'),
     autoprefixer  = require('gulp-autoprefixer'),
     uglify        = require('gulp-uglify'),
-    watch         = require('gulp-watch'),
-    batch         = require('gulp-batch'),
     plumber       = require('gulp-plumber'),
     concat        = require('gulp-concat'),
     wrapper       = require('gulp-wrapper'),
@@ -16,6 +28,7 @@ var gulp          = require('gulp'),
     filter        = require('gulp-filter'),
     minifyCSS     = require('gulp-minify-css'),
     bower         = require('gulp-main-bower-files'),
+    templateCache = require('gulp-angular-templatecache'),
     flatten       = require('gulp-flatten'),
     clean         = require('gulp-clean'),
     changed       = require('gulp-changed'),
@@ -23,28 +36,20 @@ var gulp          = require('gulp'),
 
 
 
-//http://zencoder.ru/gulp/gulp-plumber/
-//http://browsenpm.org/package/gulp-changed
-//http://getinstance.info/articles/tools/9-gulp-plugins/
-//http://habrahabr.ru/post/252745/
-//http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript
-//http://habrahabr.ru/post/190342/
-//http://habrahabr.ru/post/222065/
-gulp.task('test', function () {
-    return gulp.src(TEMPLATES_PATH + 'sass/*.sass')
-        .pipe(plumber())
-        .pipe(gulp.dest(ASSETS_PATH + 'test'));
-});
-
 /**
  * build task
  */
 gulp.task('build', ['js', 'templates', 'bower', 'sass']);
 
 /**
- * develop task
+ * Watch task
  */
-gulp.task('develop', ['js', 'templates', 'bower', 'sass', 'watch']);
+gulp.task('watch', function () {
+    gulp.watch(path.src.html, ['templates']);
+    gulp.watch(path.src.sass + '**/*.sass', ['sass']);
+    gulp.watch(path.src.js, ['js']);
+
+});
 
 /**
  * Compile all compass
@@ -52,20 +57,20 @@ gulp.task('develop', ['js', 'templates', 'bower', 'sass', 'watch']);
  * Documentation @link: https://www.npmjs.com/package/gulp-compass
  */
 gulp.task('sass', function () {
-    return gulp.src(TEMPLATES_PATH + 'sass/**/*.{sass,scss,css}')
+    return gulp.src(path.src.sass)
         .pipe(compass({
-            css: ASSETS_PATH + 'css',
-            sass: TEMPLATES_PATH + 'sass'
+            css: path.build.css,
+            sass: 'templates/sass'
         }))
         .on('error', function (error) {
             // Would like to catch the error here
             console.log(error);
             this.emit('end');
         })
-        //.pipe(autoprefixer())
+        .pipe(autoprefixer())
         .pipe(minifyCSS())
         .pipe(rename({suffix: '.min'}))
-        .pipe((gulp.dest(ASSETS_PATH + 'css')));
+        .pipe((gulp.dest(path.build.css)));
 });
 
 /**
@@ -75,7 +80,7 @@ gulp.task('bower', function () {
     var jsFilter    = filter('**/*.js', {restore: true}),
         cssFilter   = filter('**/*.css', {restore: true});
 
-    return gulp.src('./bower.json')
+    return gulp.src(SRC_PATH + 'bower.json')
         .pipe(bower({
             paths: './'
         }))
@@ -83,13 +88,13 @@ gulp.task('bower', function () {
         .pipe(dedupe())
         .pipe(concat('store.vendor.min.js'))
         .pipe(uglify())
-        .pipe(gulp.dest(ASSETS_PATH + 'vendor'))
+        .pipe(gulp.dest(path.build.js))
         .pipe(jsFilter.restore)
         .pipe(cssFilter)
         .pipe(dedupe())
         .pipe(concat('store.vendor.min.css'))
         .pipe(minifyCSS())
-        .pipe(gulp.dest(ASSETS_PATH + 'vendor'));
+        .pipe(gulp.dest(path.build.css));
 });
 
 /**
@@ -97,7 +102,7 @@ gulp.task('bower', function () {
  */
 gulp.task('js', function () {
 
-    return gulp.src(SRC_PATH + 'app/**/*.js')
+    return gulp.src(path.src.js)
         .pipe(plumber())
         .pipe(concat('store.js'))
         .pipe(ngAnnotate({add: true}))
@@ -105,12 +110,22 @@ gulp.task('js', function () {
             header: '(function(){\n"use strict";\n',
             footer: '\n})();'
         }))
-        .pipe(gulp.dest(ASSETS_PATH + 'js'))
+        .pipe(gulp.dest(path.build.js))
         .pipe(uglify({mangle: true}))
         .pipe(rename({suffix: '.min'}))
-        .pipe(gulp.dest(ASSETS_PATH + 'js'))
+        .pipe(gulp.dest(path.build.js))
 });
 
+
+/**
+ * Copy views task
+ */
+//gulp.task('templates', function () {
+//    return gulp.src(path.src.html)
+//        .pipe(plumber())
+//        .pipe(flatten())
+//        .pipe(gulp.dest(path.build.html));
+//});
 
 /**
  * Copy views task
@@ -119,33 +134,10 @@ gulp.task('templates', function () {
     return gulp.src(SRC_PATH + 'views/**/*.html')
         .pipe(plumber())
         .pipe(flatten())
-        .pipe(concat('templates/all.html'))
+        .pipe(templateCache('MissionControl.templates.js', {
+            templateHeader: 'angular.module("Store").run(["$templateCache", function' +
+            ' ($templateCache) {'
+        }))
         .pipe(gulp.dest(ASSETS_PATH));
-});
-
-
-/**
- * Watch task
- */
-gulp.task('watch', ['watch.js', 'watch.html']);
-
-
-/**
- * Watch js
- */
-gulp.task('watch.js', function () {
-    watch([SRC_PATH + 'app/**/*.js'], batch(function (events, done) {
-        gulp.start('js', done);
-    }));
-});
-
-
-/**
- * Watch templates
- */
-gulp.task('watch.html', function () {
-    watch([SRC_PATH + 'views/**/*.html'], batch(function (events, done) {
-        gulp.start('templates', done);
-    }));
 });
 
