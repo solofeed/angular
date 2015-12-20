@@ -4,7 +4,7 @@
 }
 
 .view {
-  margin-top: 100px;
+  margin-top: 50px;
   background: #2e2e2e;
   color: #fff;
 }
@@ -13,6 +13,5 @@ footer {
   font-weight: 400;
 }
 footer p {
-  margin-top: 105%;
   text-align: center;
 }

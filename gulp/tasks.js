@@ -3,13 +3,12 @@ const ASSETS_PATH = './assets/';
 
 var path = {
     build: {
-        html: ASSETS_PATH + 'templates',
         css: ASSETS_PATH + 'css',
         js: ASSETS_PATH + 'js'
     },
     src: {
         html: SRC_PATH + 'views/**/*.html',
-        sass: 'templates/sass/**/*.sass',
+        sass: SRC_PATH + 'sass/**/*.sass',
         js: SRC_PATH + 'app/**/*.js'
     },
     clean: ASSETS_PATH
@@ -46,7 +45,7 @@ gulp.task('build', ['js', 'templates', 'bower', 'sass']);
  */
 gulp.task('watch', function () {
     gulp.watch(path.src.html, ['templates']);
-    gulp.watch(path.src.sass + '**/*.sass', ['sass']);
+    gulp.watch(path.src.sass, ['sass']);
     gulp.watch(path.src.js, ['js']);
 
 });
@@ -60,7 +59,7 @@ gulp.task('sass', function () {
     return gulp.src(path.src.sass)
         .pipe(compass({
             css: path.build.css,
-            sass: 'templates/sass'
+            sass: SRC_PATH + 'sass'
         }))
         .on('error', function (error) {
             // Would like to catch the error here
@@ -116,28 +115,16 @@ gulp.task('js', function () {
         .pipe(gulp.dest(path.build.js))
 });
 
-
-/**
- * Copy views task
- */
-//gulp.task('templates', function () {
-//    return gulp.src(path.src.html)
-//        .pipe(plumber())
-//        .pipe(flatten())
-//        .pipe(gulp.dest(path.build.html));
-//});
-
 /**
  * Copy views task
  */
 gulp.task('templates', function () {
-    return gulp.src(SRC_PATH + 'views/**/*.html')
+    return gulp.src(path.src.html)
         .pipe(plumber())
         .pipe(flatten())
-        .pipe(templateCache('MissionControl.templates.js', {
-            templateHeader: 'angular.module("Store").run(["$templateCache", function' +
+        .pipe(templateCache('store.templates.js', {
+            templateHeader: 'angular.module("store").run(["$templateCache", function' +
             ' ($templateCache) {'
         }))
-        .pipe(gulp.dest(ASSETS_PATH));
+        .pipe(gulp.dest(path.build.js));
 });
-
