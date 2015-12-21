@@ -3,14 +3,33 @@
   transition: font-size 2s, color 0.5s;
 }
 
-.view {
-  margin-top: 50px;
+body {
+  overflow-y: scroll;
+}
+
+.store {
   background: #2e2e2e;
+}
+
+.view {
+  padding: 50px;
   color: #fff;
+}
+.view select {
+  color: #000;
+}
+.view .search_input {
+  color: #000;
+}
+
+.app {
+  border: 1px solid #fff;
+  border-radius: 5px;
 }
 
 footer {
   font-weight: 400;
+  color: #fff;
 }
 footer p {
   text-align: center;
